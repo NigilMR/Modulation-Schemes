@@ -1,0 +1,53 @@
+module mux_21(out1,sel,in0,in1); 
+  input sel,in0,in1;
+  output out1;
+  reg out1;
+  always@(sel or in0 or in1)
+  begin
+    if (sel)
+      out1 = in1;
+    else
+      out1=in0;
+    end
+  endmodule
+
+module fby2 ( clk ,rst,out_clk );
+output reg out_clk;
+input clk ;
+input rst;
+always @(posedge clk)
+begin
+if (~rst)
+     out_clk <= 1'b0;
+else
+     out_clk <= ~out_clk;     
+end
+endmodule
+
+module fsk11(out,clk,high,in,rst);
+output out;
+input in;
+input rst,clk,high;
+wire [2:0]w;
+fby2 f1(clk,rst,w[0]);
+mux_21 m1(out,in,w[0],clk);
+endmodule
+
+module tb3;
+reg in;
+reg clk,hig,rst;
+wire out;
+fsk11 f0(.out(out),.clk(clk),.high(high),.in(in),.rst(rst));
+always #5 clk=~clk;
+initial begin
+clk=0;
+rst=0;
+in=1'b0;
+#10 rst=1;
+#100 in=1'b1;
+#100 in=1'b1;
+#100 in=1'b0;
+#100 in=1'b1;
+#100 in=1'b0;
+#100 $finish;
+end endmodule
